@@ -1,0 +1,63 @@
+FROM toolchain
+# This docker files sets up a container with opencv 2.4.9 cross-compiled with Android NDK r9d and SDK 22.6.2 for armeabi-v7a with Android API level 14
+
+# Fetch and extract opencv's tar ball
+RUN wget -O/tmp/opencv.tar.gz https://github.com/Itseez/opencv/archive/2.4.9.tar.gz
+RUN tar -C /usr/local/src -xzf /tmp/opencv.tar.gz
+
+WORKDIR /usr/local/src/opencv-2.4.9/platforms
+RUN ./scripts/cmake_android_arm.sh
+WORKDIR build_android_arm
+
+RUN cmake\
+    -DCMAKE_INSTALL_PREFIX=$ANDROID_NDK_STANDALONE_TOOLCHAIN/sysroot/usr/share/opencv\
+    -DBUILD_ANDROID_EXAMPLES=OFF\
+    -DBUILD_ANDROID_PACKAGE=OFF\
+    -DBUILD_DOCS=OFF\
+    -DBUILD_EXAMPLES=OFF\
+    -DBUILD_FAT_JAVA_LIB=OFF\
+    -DBUILD_JASPER=OFF\
+    -DBUILD_JPEG=OFF\
+    -DBUILD_OPENEXR=OFF\
+    -DBUILD_PACKAGE=OFF\
+    -DBUILD_PERF_TESTS=OFF\
+    -DBUILD_PNG=OFF\
+    -DBUILD_SHARED_LIBS=ON\
+    -DBUILD_TBB=OFF\
+    -DBUILD_TESTS=OFF\
+    -DBUILD_TIFF=OFF\
+    -DBUILD_WITH_DEBUG_INFO=OFF\
+    -DBUILD_ZLIB=OFF\
+    -DBUILD_opencv_androidcamera=ON\
+    -DBUILD_opencv_apps=OFF\
+    -DBUILD_opencv_calib3d=ON\
+    -DBUILD_opencv_contrib=OFF\
+    -DBUILD_opencv_core=ON\
+    -DBUILD_opencv_features2d=ON\
+    -DBUILD_opencv_flann=ON\
+    -DBUILD_opencv_gpu=OFF\
+    -DBUILD_opencv_highgui=ON\
+    -DBUILD_opencv_imgproc=ON\
+    -DBUILD_opencv_legacy=OFF\
+    -DBUILD_opencv_ml=OFF\
+    -DBUILD_opencv_nonfree=OFF\
+    -DBUILD_opencv_objdetect=OFF\
+    -DBUILD_opencv_ocl=OFF\
+    -DBUILD_opencv_photo=OFF\
+    -DBUILD_opencv_stitching=OFF\
+    -DBUILD_opencv_superres=OFF\
+    -DWITH_CUBLAS=OFF\
+    -DWITH_CUDA=OFF\
+    -DWITH_CUFFT=OFF\
+    -DWITH_EIGEN=OFF\
+    -DWITH_JASPER=OFF\
+    -DWITH_JPEG=OFF\
+    -DWITH_OPENCL=OFF\
+    -DWITH_OPENEXR=OFF\
+    -DWITH_OPENMP=OFF\
+    -DWITH_PNG=OFF\
+    -DWITH_TBB=OFF\
+    -DWITH_TIFF=OFF\
+    ../..
+RUN make -j 4
+RUN make install

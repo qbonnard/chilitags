@@ -1,0 +1,29 @@
+FROM ubuntu:trusty
+# This docker files sets up a container with Android NDK r9d and SDK 22.6.2 for armeabi-v7a with Android API level 14
+
+# Make sure the packages we need exist in the repositories
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update
+
+#wget and ca-certificates are needed to get source tar balls over https
+RUN apt-get -y install wget ca-certificates
+
+RUN wget -O/tmp/android-sdk.tgz http://dl.google.com/android/android-sdk_r22.6.2-linux.tgz
+RUN tar -C /usr/local/bin -xzf /tmp/android-sdk.tgz
+RUN rm /tmp/android-sdk.tgz
+
+RUN wget -O/tmp/android-ndk.tgz http://dl.google.com/android/ndk/android-ndk-r9d-linux-x86_64.tar.bz2
+RUN tar -C /usr/local/bin -xjf /tmp/android-ndk.tgz
+RUN rm /tmp/android-ndk.tgz
+RUN mv /usr/local/bin/android-ndk-r9d /usr/local/bin/android-ndk
+
+ENV PATH /usr/local/bin/android-sdk-linux/tools:$PATH
+ENV PATH /usr/local/bin/android-sdk-linux/platform-tools:$PATH
+
+RUN apt-get install -y openjdk-7-jdk
+RUN apt-get -y install cmake
+
+RUN echo "while true; do sleep 1; echo y; done" > /tmp/myyes
+#,system-image
+RUN bash -c '. /tmp/myyes | android -s update sdk --no-ui --filter platform,tool,platform-tool'
+

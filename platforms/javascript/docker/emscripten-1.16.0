@@ -1,0 +1,39 @@
+FROM ubuntu:trusty
+# This docker files sets up emscripten 1.16.0
+
+# Make sure the packages we need exist in the repositories
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update
+
+#wget and ca-certificates are needed to get source tar balls over https
+RUN apt-get -y install wget ca-certificates
+
+# Fetch and extract emscripten
+RUN wget -O/tmp/emscripten.tar.gz https://github.com/kripken/emscripten/archive/1.16.0.tar.gz
+RUN tar -C /usr/local/bin -xzf /tmp/emscripten.tar.gz
+
+# Fetch and extract emscripten-fastcomp
+# See https://github.com/kripken/emscripten/wiki/LLVM-Backend
+RUN wget -O /tmp/emscripten-fastcomp.tar.gz https://github.com/kripken/emscripten-fastcomp/archive/1.16.0.tar.gz
+RUN tar -C /usr/local/src -xzf /tmp/emscripten-fastcomp.tar.gz
+
+RUN wget -O /tmp/emscripten-fastcomp-clang.tar.gz https://github.com/kripken/emscripten-fastcomp-clang/archive/1.16.0.tar.gz
+RUN tar -C /usr/local/src/emscripten-fastcomp-1.16.0/tools -xzf /tmp/emscripten-fastcomp-clang.tar.gz
+RUN mv /usr/local/src/emscripten-fastcomp-1.16.0/tools/emscripten-fastcomp-clang-1.16.0 /usr/local/src/emscripten-fastcomp-1.16.0/tools/clang
+
+RUN mkdir /usr/local/src/emscripten-fastcomp-1.16.0/build
+WORKDIR /usr/local/src/emscripten-fastcomp-1.16.0/build
+RUN apt-get -y install clang-3.3
+RUN apt-get -y install llvm
+RUN apt-get -y install make
+RUN apt-get -y install cmake
+RUN ../configure --enable-optimized --disable-assertions --enable-targets=host,js
+RUN make -j4
+
+# Set up emscripten
+ENV EMSCRIPTEN_ROOT /usr/local/bin/emscripten-1.16.0
+ENV PATH $EMSCRIPTEN_ROOT:$PATH
+RUN apt-get -y install nodejs
+RUN apt-get -y install python
+RUN emconfigure
+RUN echo "LLVM_ROOT='/usr/local/src/emscripten-fastcomp-1.16.0/build/Release/bin'" >> /.emscripten

@@ -1,0 +1,15 @@
+FROM ndk
+
+ENV ANDROID_NDK_STANDALONE_TOOLCHAIN /usr/local/bin/android-toolchain
+ENV ANDROID_STANDALONE_TOOLCHAIN     $ANDROID_NDK_STANDALONE_TOOLCHAIN
+ENV ANDROID_ABI                      armeabi-v7a
+ENV ANDROID_NATIVE_API_LEVEL         14
+ENV ANDROID_TOOLCHAIN_NAME           arm-linux-androideabi-4.8
+ENV PATH                             $ANDROID_NDK_STANDALONE_TOOLCHAIN/bin:$PATH
+ENV OpenCV_DIR $ANDROID_NDK_STANDALONE_TOOLCHAIN/sysroot/usr/share/opencv/sdk/native/jni
+
+WORKDIR /usr/local/bin/android-ndk
+RUN bash ./build/tools/make-standalone-toolchain.sh \
+    --platform=android-$ANDROID_NATIVE_API_LEVEL \
+    --install-dir=$ANDROID_NDK_STANDALONE_TOOLCHAIN \
+    --toolchain=$ANDROID_TOOLCHAIN_NAME
