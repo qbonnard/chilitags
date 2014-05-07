@@ -8,6 +8,8 @@ make -j4
 make install
 
 cd ..
+
+echo Compiling chilitags.js (it will take a while)...
 em++ \
     -std=c++11 \
     -O2 \

@@ -1,15 +1,13 @@
 FROM toolchain
-# This docker files sets up a container with opencv 2.4.8.2 cross-compiled with Android NDK r9d and SDK 22.6.2 for armeabi-v7a with Android API level 14
 
 # Fetch and extract opencv's tar ball
 RUN wget -O/tmp/opencv.tar.gz https://github.com/Itseez/opencv/archive/2.4.8.2.tar.gz
 RUN tar -C /usr/local/src -xzf /tmp/opencv.tar.gz
 
 WORKDIR /usr/local/src/opencv-2.4.8.2/platforms
-RUN ./scripts/cmake_android_arm.sh
-WORKDIR build_android_arm
+RUN ./scripts/cmake_android_${ABI_FAMILY}.sh
 
-RUN cmake\
+RUN bash -c "cd build_android_${ABI_FAMILY}; cmake\
     -DCMAKE_INSTALL_PREFIX=$ANDROID_NDK_STANDALONE_TOOLCHAIN/sysroot/usr/share/opencv\
     -DBUILD_ANDROID_EXAMPLES=OFF\
     -DBUILD_ANDROID_PACKAGE=OFF\
@@ -58,6 +56,6 @@ RUN cmake\
     -DWITH_PNG=OFF\
     -DWITH_TBB=OFF\
     -DWITH_TIFF=OFF\
-    ../..
-RUN make -j 4
-RUN make install
+    ../.."
+RUN bash -c "cd build_android_${ABI_FAMILY}; make -j 4"
+RUN bash -c "cd build_android_${ABI_FAMILY}; make install"

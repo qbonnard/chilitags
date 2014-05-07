@@ -1,5 +1,4 @@
 FROM ubuntu:trusty
-# This docker files sets up a container with Android NDK r9d and SDK 22.6.2 for armeabi-v7a with Android API level 14
 
 # Make sure the packages we need exist in the repositories
 ENV DEBIAN_FRONTEND noninteractive
