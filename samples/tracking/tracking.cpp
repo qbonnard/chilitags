@@ -118,8 +118,8 @@ int main(int argc, char* argv[])
             // will take over and return tags processed from the previous call
             // to track() as long as there is something returned.
             // When nothing is returned, we are back to regular detection.
-            auto tags = 
-                trackedChilitags.find(inputImage, tracking?chilitags::Chilitags::TRACK_ONLY:chilitags::Chilitags::TRACK_AND_DETECT);
+            auto tags = trackedChilitags.find(inputImage, chilitags::Chilitags::DETECT_PERIODICALLY);
+                //trackedChilitags.find(inputImage, tracking?chilitags::Chilitags::TRACK_ONLY:chilitags::Chilitags::TRACK_AND_DETECT);
             int64 endTime = cv::getTickCount();
             drawTags(outputImage, tags, startTime, endTime, false);
             tracking = !tags.empty();

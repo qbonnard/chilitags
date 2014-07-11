@@ -23,6 +23,8 @@
 
 #include "opencv2/video/tracking.hpp"
 
+#include <android/log.h>
+
 chilitags::Track::Track():
 mRefine(),
 mEnsureGreyscale(),
@@ -47,11 +49,15 @@ void chilitags::Track::update(
 std::map<int, chilitags::Quad> chilitags::Track::operator()(
     const cv::Mat &inputImage) {
 
+	__android_log_write(ANDROID_LOG_INFO, "CHILITAGS", "1");
+
     mEnsureGreyscale(mToImage).copyTo(mFromImage);
     mToImage = mEnsureGreyscale(inputImage);
 
     std::vector<uchar> status;
     std::vector<float> errors;
+
+    __android_log_write(ANDROID_LOG_INFO, "CHILITAGS", "2");
 
     std::map<int, chilitags::Quad> trackedTags;
     for (auto tag : mFromTags) {
@@ -83,8 +89,13 @@ std::map<int, chilitags::Quad> chilitags::Track::operator()(
         if (cv::sum(cv::Mat(status))[0] == status.size()) {
             trackedTags[tag.first] = mRefine(mToImage, result, .5/10.);
         }
+
+        __android_log_write(ANDROID_LOG_INFO, "CHILITAGS", "3");
     }
 
     mFromTags = std::move(trackedTags);
+
+    __android_log_write(ANDROID_LOG_INFO, "CHILITAGS", "4");
+
     return mFromTags;
 }
